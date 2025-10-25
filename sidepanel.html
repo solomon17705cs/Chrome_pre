@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="header-title">AI Assistant</h1>
+      <div class="model-status" id="modelStatus">
+        <span class="status-dot"></span>
+        <span class="status-text">Checking...</span>
+      </div>
+    </header>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="chat">Chat</button>
+      <button class="tab-btn" data-tab="summarize">Summarize</button>
+      <button class="tab-btn" data-tab="write">Write</button>
+      <button class="tab-btn" data-tab="rewrite">Rewrite</button>
+    </nav>
+
+    <div class="content-wrapper">
+      <div class="tab-content active" id="chat-tab">
+        <div class="chat-modes">
+          <button class="mode-btn active" data-mode="chat">💬 Chat</button>
+          <button class="mode-btn" data-mode="mindmap">⼬ Mind Map</button>
+          <button class="mode-btn" data-mode="roadmap"> Roadmap</button>
+          <button class="mode-btn" data-mode="flashcard">📇 Flashcard</button>
+          <button class="mode-btn" data-mode="powerpoint">📊 PowerPoint</button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages"></div>
+
+        <div class="file-upload-area" id="fileUploadArea" style="display: none;">
+          <input type="file" id="fileInput" accept="image/*,audio/*" multiple>
+          <div class="file-preview" id="filePreview"></div>
+        </div>
+
+        <div class="input-area">
+          <button class="attach-btn" id="attachBtn" title="Attach file">📎</button>
+          <textarea
+            id="chatInput"
+            class="chat-input"
+            placeholder="Type your message..."
+            rows="1"
+          ></textarea>
+          <button class="send-btn" id="sendBtn">Send</button>
+        </div>
+      </div>
+
+      <div class="tab-content" id="summarize-tab">
+        <div class="config-section">
+          <label>Type:</label>
+          <select id="summaryType">
+            <option value="key-points">Key Points</option>
+            <option value="tl;dr">TL;DR</option>
+            <option value="teaser">Teaser</option>
+            <option value="headline">Headline</option>
+          </select>
+
+          <label>Length:</label>
+          <select id="summaryLength">
+            <option value="short">Short</option>
+            <option value="medium" selected>Medium</option>
+            <option value="long">Long</option>
+          </select>
+
+          <label>Format:</label>
+          <select id="summaryFormat">
+            <option value="markdown" selected>Markdown</option>
+            <option value="plain-text">Plain Text</option>
+          </select>
+        </div>
+
+        <textarea
+          id="summarizeInput"
+          class="text-input"
+          placeholder="Enter text to summarize..."
+        ></textarea>
+
+        <button class="action-btn" id="summarizeBtn">Summarize</button>
+
+        <div class="output-area" id="summarizeOutput"></div>
+      </div>
+
+      <div class="tab-content" id="write-tab">
+        <div class="config-section">
+          <label>Tone:</label>
+          <select id="writerTone">
+            <option value="formal">Formal</option>
+            <option value="neutral" selected>Neutral</option>
+            <option value="casual">Casual</option>
+            <button class="action-btn" id="exportToSlidesBtn" style="display:none;">Export to Google Slides</button>
+            
+          </select>
+
+          <label>Length:</label>
+          <select id="writerLength">
+            <option value="short">Short</option>
+            <option value="medium" selected>Medium</option>
+            <option value="long">Long</option>
+          </select>
+
+          <label>Format:</label>
+          <select id="writerFormat">
+            <option value="markdown" selected>Markdown</option>
+            <option value="plain-text">Plain Text</option>
+          </select>
+        </div>
+
+        <textarea
+          id="writePrompt"
+          class="text-input"
+          placeholder="What do you want to write? (e.g., 'An email to my team about the project update')"
+        ></textarea>
+
+        <textarea
+          id="writeContext"
+          class="text-input small"
+          placeholder="Additional context (optional)"
+        ></textarea>
+
+        <button class="action-btn" id="writeBtn">Write</button>
+
+        <div class="output-area" id="writeOutput"></div>
+      </div>
+
+      <div class="tab-content" id="rewrite-tab">
+        <div class="config-section">
+          <label>Tone:</label>
+          <select id="rewriterTone">
+            <option value="more-formal">More Formal</option>
+            <option value="as-is" selected>As Is</option>
+            <option value="more-casual">More Casual</option>
+          </select>
+
+          <label>Length:</label>
+          <select id="rewriterLength">
+            <option value="shorter">Shorter</option>
+            <option value="as-is" selected>As Is</option>
+            <option value="longer">Longer</option>
+          </select>
+
+          <label>Format:</label>
+          <select id="rewriterFormat">
+            <option value="as-is" selected>As Is</option>
+            <option value="markdown">Markdown</option>
+            <option value="plain-text">Plain Text</option>
+          </select>
+        </div>
+
+        <textarea
+          id="rewriteInput"
+          class="text-input"
+          placeholder="Enter text to rewrite..."
+        ></textarea>
+
+        <textarea
+          id="rewriteContext"
+          class="text-input small"
+          placeholder="Additional context (optional)"
+        ></textarea>
+
+        <button class="action-btn" id="rewriteBtn">Rewrite</button>
+
+        <div class="output-area" id="rewriteOutput"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="prompt-api.js"></script>
+  <script src="summarizer-api.js"></script>
+  <script src="writer-api.js"></script>
+  <script src="rewriter-api.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
