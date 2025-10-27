@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIO Favicon Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="aio-logo.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header" role="banner">
+            <h1 class="header-title">AIO Favicon Generator</h1>
+        </header>
+
+        <main class="content-wrapper" style="padding: var(--space-lg);">
+            <div class="chat-messages">
+                <div class="message assistant">
+                    <div class="message-header">AIO Assistant</div>
+                    <div class="message-content">
+                        <h3>🎨 Favicon Generator</h3>
+                        <p>Generate different sizes of the AIO favicon for your website.</p>
+                        
+                        <div style="margin: 20px 0;">
+                            <button onclick="generateFavicon(16)" style="margin: 5px; padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">16x16</button>
+                            <button onclick="generateFavicon(32)" style="margin: 5px; padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">32x32</button>
+                            <button onclick="generateFavicon(48)" style="margin: 5px; padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">48x48</button>
+                            <button onclick="generateFavicon(64)" style="margin: 5px; padding: 8px 16px; background: #6366f1; color: white; border: none; border-radius: 4px; cursor: pointer;">64x64</button>
+                            <button onclick="downloadSVG()" style="margin: 5px; padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">Download SVG</button>
+                        </div>
+                        
+                        <div id="faviconPreview" style="margin: 20px 0; padding: 20px; background: #f3f4f6; border-radius: 8px; text-align: center;">
+                            <p>Click a size button to generate favicon</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="aio-logo.js"></script>
+    <script>
+        function generateFavicon(size) {
+            const logo = new AIOLogo();
+            const svgContent = logo.createFavicon();
+            
+            // Create canvas to convert SVG to PNG
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                
+                // Convert to PNG and create download link
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = `aio-favicon-${size}x${size}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    
+                    // Show preview
+                    const preview = document.getElementById('faviconPreview');
+                    preview.innerHTML = `
+                        <h4>Generated ${size}x${size} Favicon</h4>
+                        <img src="${link.href}" style="border: 1px solid #ccc; margin: 10px;">
+                        <br>
+                        <a href="${link.href}" download="${link.download}" 
+                           style="display: inline-block; margin: 10px; padding: 8px 16px; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">
+                           Download ${size}x${size} PNG
+                        </a>
+                    `;
+                });
+                
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+        }
+        
+        function downloadSVG() {
+            const logo = new AIOLogo();
+            const svgContent = logo.createFavicon();
+            
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const link = document.createElement('a');
+            link.download = 'aio-favicon.svg';
+            link.href = URL.createObjectURL(blob);
+            
+            const preview = document.getElementById('faviconPreview');
+            preview.innerHTML = `
+                <h4>SVG Favicon</h4>
+                <div style="margin: 10px;">${svgContent}</div>
+                <a href="${link.href}" download="${link.download}" 
+                   style="display: inline-block; margin: 10px; padding: 8px 16px; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">
+                   Download SVG
+                </a>
+            `;
+            
+            link.click();
+        }
+    </script>
+</body>
+</html>

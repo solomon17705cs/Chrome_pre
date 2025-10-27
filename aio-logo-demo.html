@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIO Logo Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="aio-logo.css">
+    <style>
+        .demo-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border-light);
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: var(--color-surface);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+        
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .demo-item {
+            padding: 20px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border-light);
+            text-align: center;
+        }
+        
+        .demo-item h4 {
+            margin-bottom: 15px;
+            color: var(--color-text-primary);
+        }
+        
+        .logo-showcase {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100px;
+        }
+        
+        .dark-demo {
+            background: #1f2937;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header" role="banner">
+            <div id="headerLogo"></div>
+            <div class="header-controls">
+                <div class="model-status" id="modelStatus" role="status" aria-live="polite">
+                    <span class="status-dot ready" aria-label="Model status indicator"></span>
+                    <span class="status-text">Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-wrapper" style="padding: var(--space-lg);">
+            <div class="chat-messages">
+                <div class="message assistant">
+                    <div class="message-header">AIO Assistant</div>
+                    <div class="message-content">
+                        <h2>🎨 AIO Logo Showcase</h2>
+                        <p>Welcome to the new <strong>AIO (All-In-One) Assistant</strong>! Here's a showcase of our new logo design.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-header">
+                    <h3>Logo Variations</h3>
+                    <p>Different sizes and styles for various use cases</p>
+                </div>
+                
+                <div class="demo-grid">
+                    <div class="demo-item">
+                        <h4>Normal Size</h4>
+                        <div class="logo-showcase" id="normalLogo"></div>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>Compact Size</h4>
+                        <div class="logo-showcase" id="compactLogo"></div>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>Mini Size</h4>
+                        <div class="logo-showcase" id="miniLogo"></div>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>Animated Version</h4>
+                        <div class="logo-showcase" id="animatedLogo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-header">
+                    <h3>Dark Theme</h3>
+                    <p>Logo variations for dark backgrounds</p>
+                </div>
+                
+                <div class="demo-grid">
+                    <div class="demo-item dark-demo">
+                        <h4>Dark Theme Normal</h4>
+                        <div class="logo-showcase" id="darkLogo"></div>
+                    </div>
+                    
+                    <div class="demo-item dark-demo">
+                        <h4>Dark Theme Compact</h4>
+                        <div class="logo-showcase" id="darkCompactLogo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-header">
+                    <h3>Logo Features</h3>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="demo-item">
+                        <h4>🎨 Modern Design</h4>
+                        <p>Clean, gradient-based design with geometric elements representing connectivity and integration.</p>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>📱 Scalable</h4>
+                        <p>SVG-based logo that scales perfectly from favicon size to large displays.</p>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>🌈 Multiple Themes</h4>
+                        <p>Light and dark theme variations to match any interface design.</p>
+                    </div>
+                    
+                    <div class="demo-item">
+                        <h4>⚡ Animated</h4>
+                        <p>Optional subtle animations for enhanced user experience.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-header">
+                    <h3>Brand Identity</h3>
+                </div>
+                
+                <div class="demo-item">
+                    <h4>AIO - All-In-One Assistant</h4>
+                    <p><strong>Mission:</strong> Providing comprehensive AI assistance in a single, integrated platform.</p>
+                    <p><strong>Values:</strong> Simplicity, Integration, Intelligence, Accessibility</p>
+                    <p><strong>Design Philosophy:</strong> The logo combines the letters "AIO" with geometric patterns representing connectivity and unity, symbolizing how all features work together seamlessly.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="aio-logo.js"></script>
+    <script>
+        // Create different logo variations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Header logo
+            const headerLogo = new AIOLogo({ size: 'compact' });
+            headerLogo.insertInto('#headerLogo');
+            
+            // Normal logo
+            const normalLogo = new AIOLogo({ size: 'normal', showSubtitle: true });
+            normalLogo.insertInto('#normalLogo');
+            
+            // Compact logo
+            const compactLogo = new AIOLogo({ size: 'compact' });
+            compactLogo.insertInto('#compactLogo');
+            
+            // Mini logo
+            const miniLogo = new AIOLogo({ size: 'mini' });
+            miniLogo.insertInto('#miniLogo');
+            
+            // Animated logo
+            const animatedLogo = new AIOLogo({ size: 'normal', animated: true });
+            animatedLogo.insertInto('#animatedLogo');
+            
+            // Dark theme logos
+            const darkLogo = new AIOLogo({ size: 'normal', theme: 'dark', showSubtitle: true });
+            darkLogo.insertInto('#darkLogo');
+            
+            const darkCompactLogo = new AIOLogo({ size: 'compact', theme: 'dark' });
+            darkCompactLogo.insertInto('#darkCompactLogo');
+        });
+    </script>
+</body>
+</html>

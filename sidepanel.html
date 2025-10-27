@@ -1,39 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Assistant</title>
+  <title>AIO - All-In-One Assistant</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="aio-logo.css">
 </head>
+
 <body>
+  <!-- Skip link for keyboard navigation -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <div class="container">
-    <header class="header">
-      <h1 class="header-title">AI Assistant</h1>
-      <div class="model-status" id="modelStatus">
-        <span class="status-dot"></span>
-        <span class="status-text">Checking...</span>
+    <header class="header" role="banner">
+      <h1 class="header-title">AIO Assistant</h1>
+      <div class="header-controls">
+        <button class="personal-data-btn header-profile-btn" id="personalDataBtn" title="Manage personal data">👤</button>
+        <div class="model-status" id="modelStatus" role="status" aria-live="polite">
+          <span class="status-dot" aria-label="Model status indicator"></span>
+          <span class="status-text">Checking...</span>
+        </div>
       </div>
     </header>
 
-    <nav class="nav-tabs">
-      <button class="tab-btn active" data-tab="chat">Chat</button>
-      <button class="tab-btn" data-tab="summarize">Summarize</button>
-      <button class="tab-btn" data-tab="write">Write</button>
-      <button class="tab-btn" data-tab="rewrite">Rewrite</button>
+    <nav class="nav-tabs" role="tablist" aria-label="AI Assistant features">
+      <button class="tab-btn active" data-tab="chat" role="tab" aria-selected="true" aria-controls="chat-tab"
+        id="chat-tab-btn"><span>💬 Chat</span></button>
+      <button class="tab-btn" data-tab="summarize" role="tab" aria-selected="false" aria-controls="summarize-tab"
+        id="summarize-tab-btn"><span>📝 Summarize</span></button>
+      <button class="tab-btn" data-tab="write" role="tab" aria-selected="false" aria-controls="write-tab"
+        id="write-tab-btn"><span>✍️ Write</span></button>
+      <button class="tab-btn" data-tab="rewrite" role="tab" aria-selected="false" aria-controls="rewrite-tab"
+        id="rewrite-tab-btn"><span>🔄 Rewrite</span></button>
     </nav>
 
-    <div class="content-wrapper">
-      <div class="tab-content active" id="chat-tab">
-        <div class="chat-modes">
-          <button class="mode-btn active" data-mode="chat">💬 Chat</button>
-          <button class="mode-btn" data-mode="mindmap">⼬ Mind Map</button>
-          <button class="mode-btn" data-mode="roadmap"> Roadmap</button>
-          <button class="mode-btn" data-mode="flashcard">📇 Flashcard</button>
-          <button class="mode-btn" data-mode="powerpoint">📊 PowerPoint</button>
+    <main class="content-wrapper" id="main-content">
+      <div class="tab-content active" id="chat-tab" role="tabpanel" aria-labelledby="chat-tab-btn">
+        <div class="chat-mode-dropdown" role="group" aria-label="Chat modes">
+          <button class="dropdown-toggle" id="modeDropdownToggle" aria-haspopup="true" aria-expanded="false"
+            aria-label="Select chat mode">
+            <span class="current-mode-text">💬 Chat</span>
+            <span class="dropdown-arrow" aria-hidden="true">▼</span>
+          </button>
+          <div class="dropdown-menu" id="modeDropdownMenu" role="menu" aria-labelledby="modeDropdownToggle">
+            <button class="dropdown-item active" data-mode="chat" role="menuitem" aria-label="Chat mode">💬
+              Chat</button>
+            <button class="dropdown-item" data-mode="mindmap" role="menuitem" aria-label="Mind Map mode">🧠 Mind
+              Map</button>
+            <button class="dropdown-item" data-mode="roadmap" role="menuitem" aria-label="Roadmap mode">🗺️
+              Roadmap</button>
+            <button class="dropdown-item" data-mode="flashcard" role="menuitem" aria-label="Flashcard mode">🃏
+              Cards</button>
+            <button class="dropdown-item" data-mode="powerpoint" role="menuitem" aria-label="PowerPoint mode">📊
+              Slides</button>
+          </div>
         </div>
 
-        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-label="Chat conversation"
+          tabindex="0"></div>
 
         <div class="file-upload-area" id="fileUploadArea" style="display: none;">
           <input type="file" id="fileInput" accept="image/*,audio/*" multiple>
@@ -42,140 +68,187 @@
 
         <div class="input-area">
           <button class="attach-btn" id="attachBtn" title="Attach file">📎</button>
-          <textarea
-            id="chatInput"
-            class="chat-input"
-            placeholder="Type your message..."
-            rows="1"
-          ></textarea>
+          <textarea id="chatInput" class="chat-input" placeholder="Type your message..." rows="1"></textarea>
           <button class="send-btn" id="sendBtn">Send</button>
         </div>
       </div>
 
-      <div class="tab-content" id="summarize-tab">
-        <div class="config-section">
-          <label>Type:</label>
-          <select id="summaryType">
+      <div class="tab-content" id="summarize-tab" role="tabpanel" aria-labelledby="summarize-tab-btn">
+        <div class="config-section" role="group" aria-label="Summarization settings">
+          <label for="summaryType">Type:</label>
+          <select id="summaryType" aria-label="Summary type">
             <option value="key-points">Key Points</option>
             <option value="tl;dr">TL;DR</option>
             <option value="teaser">Teaser</option>
             <option value="headline">Headline</option>
           </select>
 
-          <label>Length:</label>
-          <select id="summaryLength">
+          <label for="summaryLength">Length:</label>
+          <select id="summaryLength" aria-label="Summary length">
             <option value="short">Short</option>
             <option value="medium" selected>Medium</option>
             <option value="long">Long</option>
           </select>
 
-          <label>Format:</label>
-          <select id="summaryFormat">
+          <label for="summaryFormat">Format:</label>
+          <select id="summaryFormat" aria-label="Output format">
             <option value="markdown" selected>Markdown</option>
             <option value="plain-text">Plain Text</option>
           </select>
         </div>
 
-        <textarea
-          id="summarizeInput"
-          class="text-input"
-          placeholder="Enter text to summarize..."
-        ></textarea>
+        <label for="summarizeInput" class="sr-only">Text to summarize</label>
+        <textarea id="summarizeInput" class="text-input" placeholder="Enter text to summarize..."
+          aria-label="Text to summarize" aria-describedby="summarize-help"></textarea>
+        <div id="summarize-help" class="sr-only">Enter the text you want to summarize, then click the Summarize button
+        </div>
 
-        <button class="action-btn" id="summarizeBtn">Summarize</button>
+        <button class="action-btn" id="summarizeBtn" aria-describedby="summarize-output-help">
+          <span>Summarize</span>
+        </button>
+        <div id="summarize-output-help" class="sr-only">The summary will appear in the output area below</div>
 
-        <div class="output-area" id="summarizeOutput"></div>
+        <div class="output-area" id="summarizeOutput" role="region" aria-live="polite" aria-label="Summary output">
+        </div>
       </div>
 
-      <div class="tab-content" id="write-tab">
-        <div class="config-section">
-          <label>Tone:</label>
-          <select id="writerTone">
+      <div class="tab-content" id="write-tab" role="tabpanel" aria-labelledby="write-tab-btn">
+        <div class="config-section" role="group" aria-label="Writing settings">
+          <label for="writerTone">Tone:</label>
+          <select id="writerTone" aria-label="Writing tone">
             <option value="formal">Formal</option>
             <option value="neutral" selected>Neutral</option>
             <option value="casual">Casual</option>
-            <button class="action-btn" id="exportToSlidesBtn" style="display:none;">Export to Google Slides</button>
-            
           </select>
 
-          <label>Length:</label>
-          <select id="writerLength">
+          <label for="writerLength">Length:</label>
+          <select id="writerLength" aria-label="Content length">
             <option value="short">Short</option>
             <option value="medium" selected>Medium</option>
             <option value="long">Long</option>
           </select>
 
-          <label>Format:</label>
-          <select id="writerFormat">
+          <label for="writerFormat">Format:</label>
+          <select id="writerFormat" aria-label="Output format">
             <option value="markdown" selected>Markdown</option>
             <option value="plain-text">Plain Text</option>
           </select>
         </div>
 
-        <textarea
-          id="writePrompt"
-          class="text-input"
+        <label for="writePrompt" class="sr-only">Writing prompt</label>
+        <textarea id="writePrompt" class="text-input"
           placeholder="What do you want to write? (e.g., 'An email to my team about the project update')"
-        ></textarea>
+          aria-label="Writing prompt" aria-describedby="write-prompt-help"></textarea>
+        <div id="write-prompt-help" class="sr-only">Describe what you want to write. Be specific about the type of
+          content and purpose.</div>
 
-        <textarea
-          id="writeContext"
-          class="text-input small"
-          placeholder="Additional context (optional)"
-        ></textarea>
+        <label for="writeContext" class="sr-only">Additional context</label>
+        <textarea id="writeContext" class="text-input small" placeholder="Additional context (optional)"
+          aria-label="Additional context (optional)" aria-describedby="write-context-help"></textarea>
+        <div id="write-context-help" class="sr-only">Provide any additional context or specific requirements for the
+          content</div>
 
-        <button class="action-btn" id="writeBtn">Write</button>
+        <button class="action-btn" id="writeBtn" aria-describedby="write-output-help">
+          <span>Write</span>
+        </button>
+        <div id="write-output-help" class="sr-only">The generated content will appear in the output area below</div>
 
-        <div class="output-area" id="writeOutput"></div>
+        <button class="action-btn" id="exportToSlidesBtn" style="display:none;" aria-label="Export to Google Slides">
+          <span>Export to Google Slides</span>
+        </button>
+
+        <div class="output-area" id="writeOutput" role="region" aria-live="polite" aria-label="Generated content"></div>
       </div>
 
-      <div class="tab-content" id="rewrite-tab">
-        <div class="config-section">
-          <label>Tone:</label>
-          <select id="rewriterTone">
+      <div class="tab-content" id="rewrite-tab" role="tabpanel" aria-labelledby="rewrite-tab-btn">
+        <div class="config-section" role="group" aria-label="Rewriting settings">
+          <label for="rewriterTone">Tone:</label>
+          <select id="rewriterTone" aria-label="Tone adjustment">
             <option value="more-formal">More Formal</option>
             <option value="as-is" selected>As Is</option>
             <option value="more-casual">More Casual</option>
           </select>
 
-          <label>Length:</label>
-          <select id="rewriterLength">
+          <label for="rewriterLength">Length:</label>
+          <select id="rewriterLength" aria-label="Length adjustment">
             <option value="shorter">Shorter</option>
             <option value="as-is" selected>As Is</option>
             <option value="longer">Longer</option>
           </select>
 
-          <label>Format:</label>
-          <select id="rewriterFormat">
+          <label for="rewriterFormat">Format:</label>
+          <select id="rewriterFormat" aria-label="Output format">
             <option value="as-is" selected>As Is</option>
             <option value="markdown">Markdown</option>
             <option value="plain-text">Plain Text</option>
           </select>
         </div>
 
-        <textarea
-          id="rewriteInput"
-          class="text-input"
-          placeholder="Enter text to rewrite..."
-        ></textarea>
+        <label for="rewriteInput" class="sr-only">Text to rewrite</label>
+        <textarea id="rewriteInput" class="text-input" placeholder="Enter text to rewrite..."
+          aria-label="Text to rewrite" aria-describedby="rewrite-input-help"></textarea>
+        <div id="rewrite-input-help" class="sr-only">Enter the text you want to rewrite or improve</div>
 
-        <textarea
-          id="rewriteContext"
-          class="text-input small"
-          placeholder="Additional context (optional)"
-        ></textarea>
+        <label for="rewriteContext" class="sr-only">Additional context</label>
+        <textarea id="rewriteContext" class="text-input small" placeholder="Additional context (optional)"
+          aria-label="Additional context (optional)" aria-describedby="rewrite-context-help"></textarea>
+        <div id="rewrite-context-help" class="sr-only">Provide any specific instructions or context for the rewrite
+        </div>
 
-        <button class="action-btn" id="rewriteBtn">Rewrite</button>
+        <button class="action-btn" id="rewriteBtn" aria-describedby="rewrite-output-help">
+          <span>Rewrite</span>
+        </button>
+        <div id="rewrite-output-help" class="sr-only">The rewritten content will appear in the output area below</div>
 
-        <div class="output-area" id="rewriteOutput"></div>
+        <div class="output-area" id="rewriteOutput" role="region" aria-live="polite" aria-label="Rewritten content">
+        </div>
       </div>
-    </div>
+    </main>
   </div>
 
   <script src="prompt-api.js"></script>
   <script src="summarizer-api.js"></script>
   <script src="writer-api.js"></script>
   <script src="rewriter-api.js"></script>
+  <script src="personal-data-manager.js"></script>
+  <script src="data-management-modal.js"></script>
+  <script src="aio-logo.js"></script>
   <script src="app.js"></script>
+  <script src="dropdown.js"></script>
 </body>
-</html>
+
+</html><style
+>
+/* Inline CSS to fix attach button issues */
+.attach-btn-fixed:hover {
+  background: #4f46e5 !important;
+}
+
+.attach-btn-fixed.active {
+  background: #10b981 !important;
+}
+
+.send-btn-fixed:hover {
+  background: #4f46e5 !important;
+}
+
+.chat-input-fixed:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.attach-btn-fixed:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.send-btn-fixed:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Ensure no conflicts with existing CSS */
+.input-area-fixed * {
+  box-sizing: border-box !important;
+}
+</style>
