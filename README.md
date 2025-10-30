@@ -38,7 +38,7 @@
 
 ### 🌟 **Community & Support**
 
-![GitHub Stars](https://img.shields.io/github/stars/solomon17705cs/Chrome_pre?style=for-the-badge&logo=github)
+![GitHub Stars](https://img.shields.io/badge/GitHub-⭐%20Star%20This%20Repo-yellow?style=for-the-badge&logo=github)
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen?style=for-the-badge&logo=heart)
 
