@@ -34,7 +34,7 @@
 ![AI Modes](https://img.shields.io/badge/AI%20Modes-5%20Types-purple?style=for-the-badge&logo=brain&logoColor=white)
 ![File Support](https://img.shields.io/badge/File%20Support-Images%20%26%20Audio-teal?style=for-the-badge&logo=file&logoColor=white)
 ![Offline Ready](https://img.shields.io/badge/Offline-Ready-darkgreen?style=for-the-badge&logo=wifi&logoColor=white)
-![Cross Platform](https://img.shields.io/badge/Cross-Platform-Compatible-indigo?style=for-the-badge&logo=windows&logoColor=white)
+![Cross Platform](https://img.shields.io/badge/Cross--Platform-Compatible-indigo?style=for-the-badge)
 
 ### 🌟 **Community & Support**
 
