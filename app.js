@@ -71,7 +71,8 @@ function setupEventListeners() {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  document.querySelectorAll('.mode-btn, .dropdown-item').forEach(btn => {
+  // Only handle mode buttons, dropdown items are handled by dropdown.js
+  document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => switchMode(btn.dataset.mode));
   });
 
@@ -134,12 +135,78 @@ function switchTab(tab) {
 }
 
 function switchMode(mode) {
+  console.log('switchMode called with mode:', mode);
+  console.log('Current promptHandler mode before switch:', promptHandler.currentMode);
+  
+  // Set the mode in the prompt handler
   promptHandler.setMode(mode);
+  console.log('promptHandler mode after switch:', promptHandler.currentMode);
 
-  document.querySelectorAll('.mode-btn, .dropdown-item').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mode === mode);
+  // Update active state for both mode buttons and dropdown items
+  const modeElements = document.querySelectorAll('.mode-btn, .dropdown-item');
+  console.log('Found mode elements:', modeElements.length);
+  
+  modeElements.forEach(btn => {
+    const isActive = btn.dataset.mode === mode;
+    btn.classList.toggle('active', isActive);
+    console.log(`Updated ${btn.dataset.mode} element active state:`, isActive);
+  });
+  
+  // Update dropdown display text
+  const currentModeText = document.querySelector('.current-mode-text');
+  const modeLabels = {
+    'chat': 'Chat',
+    'mindmap': 'Mind Map',
+    'roadmap': 'Roadmap',
+    'flashcard': 'Cards',
+    'powerpoint': 'Slides'
+  };
+  
+  if (currentModeText) {
+    const newText = modeLabels[mode] || 'Chat';
+    currentModeText.textContent = newText;
+    console.log('Updated dropdown text to:', newText);
+  } else {
+    console.warn('currentModeText element not found');
+  }
+  
+  // Clear output content and hide export button when switching modes
+  clearModeSpecificContent();
+  
+  console.log('switchMode completed for mode:', mode);
+}
+
+/**
+ * Clears mode-specific content and UI elements when switching modes
+ */
+function clearModeSpecificContent() {
+  // Hide export button
+  const exportBtn = document.getElementById('exportToSlidesBtn');
+  if (exportBtn) {
+    exportBtn.style.display = 'none';
+    
+    // Remove any existing event listeners by cloning the button
+    const newExportBtn = exportBtn.cloneNode(true);
+    exportBtn.parentNode.replaceChild(newExportBtn, exportBtn);
+  }
+  
+  // Clear chat-specific output areas only
+  // Note: writeOutput and rewriteOutput are in separate tabs and should not be cleared
+  // when switching chat modes (chat, mindmap, roadmap, etc.)
+  const chatOutputAreas = [
+    'chatOutput'
+  ];
+  
+  chatOutputAreas.forEach(outputId => {
+    const outputElement = document.getElementById(outputId);
+    if (outputElement) {
+      outputElement.innerHTML = '';
+    }
   });
 }
+
+// Make switchMode globally accessible for dropdown.js
+window.switchMode = switchMode;
 
 
 function toggleFileUpload() {
@@ -153,8 +220,70 @@ function toggleFileUpload() {
 
 // Removed duplicate handleFileSelect function - using the enhanced version below
 
+
+
+function handleFileSelect(e) {
+  const files = Array.from(e.target.files);
+  const filePreview = document.getElementById('filePreview');
+
+  files.forEach(file => {
+    promptHandler.addFile(file);
+
+    const previewItem = document.createElement('div');
+    previewItem.className = 'file-preview-item';
+
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      previewItem.appendChild(img);
+    } else if (file.type === 'application/pdf') {
+      const pdfIcon = document.createElement('span');
+      pdfIcon.textContent = '📄';
+      pdfIcon.style.fontSize = '24px';
+      previewItem.appendChild(pdfIcon);
+    } else {
+      // For other files, show a generic icon
+      const genericIcon = document.createElement('span');
+      genericIcon.textContent = '📎';
+      genericIcon.style.fontSize = '24px';
+      previewItem.appendChild(genericIcon);
+    }
+
+    const fileName = document.createElement('span');
+    fileName.textContent = file.name;
+    previewItem.appendChild(fileName);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'file-remove';
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => {
+      const index = Array.from(filePreview.children).indexOf(previewItem);
+      promptHandler.removeFile(index);
+      previewItem.remove();
+    };
+    previewItem.appendChild(removeBtn);
+
+    filePreview.appendChild(previewItem);
+  });
+}
+
+function handleDrop(e) {
+  e.preventDefault(); // 👈 Prevent default (opening file)
+  e.stopPropagation();
+
+  const dt = e.dataTransfer;
+  const files = dt.files;
+
+  // Create a fake event object to reuse handleFileSelect
+  const fakeEvent = new Event('change');
+  fakeEvent.target = document.getElementById('fileInput');
+  fakeEvent.target.files = files;
+
+  handleFileSelect(fakeEvent);
+}
 function setupDragAndDrop() {
   const fileUploadArea = document.getElementById('fileUploadArea');
+  const fileInput = document.getElementById('fileInput');
 
   // Prevent default drag behaviors
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -167,6 +296,7 @@ function setupDragAndDrop() {
     fileUploadArea.addEventListener(eventName, highlight, false);
   });
 
+  // Unhighlight when item is dragged out of it
   ['dragleave', 'drop'].forEach(eventName => {
     fileUploadArea.addEventListener(eventName, unhighlight, false);
   });
@@ -192,48 +322,12 @@ function setupDragAndDrop() {
     const files = dt.files;
 
     // Create a fake event object to reuse handleFileSelect
-    const fakeEvent = {
-      target: {
-        files: files
-      }
-    };
+    const fakeEvent = new Event('change');
+    fakeEvent.target = fileInput;
+    fakeEvent.target.files = files;
 
     handleFileSelect(fakeEvent);
   }
-}
-
-function handleFileSelect(e) {
-  const files = Array.from(e.target.files);
-  const filePreview = document.getElementById('filePreview');
-
-  files.forEach(file => {
-    promptHandler.addFile(file);
-
-    const previewItem = document.createElement('div');
-    previewItem.className = 'file-preview-item';
-
-    if (file.type.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      previewItem.appendChild(img);
-    }
-
-    const fileName = document.createElement('span');
-    fileName.textContent = file.name;
-    previewItem.appendChild(fileName);
-
-    const removeBtn = document.createElement('button');
-    removeBtn.className = 'file-remove';
-    removeBtn.textContent = '×';
-    removeBtn.onclick = () => {
-      const index = Array.from(filePreview.children).indexOf(previewItem);
-      promptHandler.removeFile(index);
-      previewItem.remove();
-    };
-    previewItem.appendChild(removeBtn);
-
-    filePreview.appendChild(previewItem);
-  });
 }
 
 async function handleChatSend() {
@@ -254,7 +348,16 @@ async function handleChatSend() {
   assistantMessage.className = 'message assistant';
   assistantMessage.innerHTML = `
     <div class="message-header">Assistant</div>
-    <div class="message-content"><span class="loading"></span> Thinking...</div>
+    <div class="message-content">
+      <div class="thinking-indicator">
+        <div class="thinking-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span class="thinking-text">Thinking...</span>
+      </div>
+    </div>
   `;
   messagesContainer.appendChild(assistantMessage);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -297,25 +400,48 @@ async function handleChatSend() {
     // Handle Mind Map mode separately (JSON)
     if (promptHandler.currentMode === 'mindmap') {
       try {
-        const mindMapData = JSON.parse(fullResponse.trim());
+        const mindMapData = extractAndParseJSON(fullResponse);
+        
+        // Check if AI returned an error
+        if (mindMapData.error) {
+          throw new Error(mindMapData.error);
+        }
+        
         const formatted = renderMindMapFromJSON(mindMapData);
         contentDiv.innerHTML = '';
         contentDiv.appendChild(formatted);
       } catch (parseError) {
-        console.error('JSON parse failed:', parseError, 'Raw response:', fullResponse);
-        const errorMsg = createErrorMessage(
-          'Failed to generate mind map. Please try a more specific topic.',
-          'warning',
-          [{
-            text: 'Try Again',
-            handler: () => {
-              const input = document.getElementById('chatInput');
-              input.focus();
-            }
-          }]
-        );
-        contentDiv.innerHTML = '';
-        contentDiv.appendChild(errorMsg);
+        console.error('Mind map generation failed:', parseError, 'Raw response:', fullResponse);
+        
+        // Try to create a mind map from the text response as fallback
+        try {
+          const fallbackMindMap = createMindMapFromText(fullResponse, message);
+          const formatted = renderMindMapFromJSON(fallbackMindMap);
+          contentDiv.innerHTML = '';
+          contentDiv.appendChild(formatted);
+          
+          // Show a notice that fallback was used
+          const notice = document.createElement('div');
+          notice.className = 'mindmap-notice';
+          notice.innerHTML = '💡 Generated mind map from text response';
+          contentDiv.insertBefore(notice, contentDiv.firstChild);
+        } catch (fallbackError) {
+          console.error('Fallback mind map creation failed:', fallbackError);
+          const errorMsg = createErrorMessage(
+            'Unable to generate mind map. Try a more specific topic like "Machine Learning" or "Project Management".',
+            'warning',
+            [{
+              text: 'Try Different Topic',
+              handler: () => {
+                const input = document.getElementById('chatInput');
+                input.value = '';
+                input.focus();
+              }
+            }]
+          );
+          contentDiv.innerHTML = '';
+          contentDiv.appendChild(errorMsg);
+        }
       }
     } else {
       // For all other modes: use incremental-compatible string output
@@ -528,7 +654,16 @@ async function handleSummarize() {
   }
 
   btn.disabled = true;
-  output.innerHTML = '<span class="loading"></span> Summarizing...';
+  output.innerHTML = `
+    <div class="thinking-indicator">
+      <div class="thinking-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <span class="thinking-text">Summarizing...</span>
+    </div>
+  `;
 
   try {
     const stream = await summarizerHandler.summarizeStreaming(input);
@@ -582,17 +717,41 @@ async function handleWrite() {
   }
 
   btn.disabled = true;
-  output.innerHTML = '<span class="loading"></span> Writing...';
+  
+  // Show loading indicator
+  output.innerHTML = `
+    <div class="thinking-indicator">
+      <div class="thinking-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <span class="thinking-text">Writing...</span>
+    </div>
+  `;
 
   try {
     const stream = await writerHandler.writeStreaming(prompt, context);
 
     let fullText = '';
+    let isFirstChunk = true;
+    
     for await (const chunk of stream) {
       fullText += chunk;
+      
+      // Clear loading indicator on first chunk
+      if (isFirstChunk) {
+        output.innerHTML = '';
+        isFirstChunk = false;
+      }
+      
+      // Format and display the accumulated text
       const formatted = formatWriterOutput(fullText);
       output.innerHTML = '';
       output.appendChild(formatted);
+      
+      // Ensure the output is visible
+      output.style.display = 'block';
     }
 
   } catch (error) {
@@ -642,17 +801,41 @@ async function handleRewrite() {
   }
 
   btn.disabled = true;
-  output.innerHTML = '<span class="loading"></span> Rewriting...';
+  
+  // Show loading indicator
+  output.innerHTML = `
+    <div class="thinking-indicator">
+      <div class="thinking-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <span class="thinking-text">Rewriting...</span>
+    </div>
+  `;
 
   try {
     const stream = await rewriterHandler.rewriteStreaming(input, context);
 
     let fullText = '';
+    let isFirstChunk = true;
+    
     for await (const chunk of stream) {
       fullText += chunk;
+      
+      // Clear loading indicator on first chunk
+      if (isFirstChunk) {
+        output.innerHTML = '';
+        isFirstChunk = false;
+      }
+      
+      // Format and display the accumulated text
       const formatted = formatRewriterOutput(fullText);
       output.innerHTML = '';
       output.appendChild(formatted);
+      
+      // Ensure the output is visible
+      output.style.display = 'block';
     }
 
   } catch (error) {
@@ -961,4 +1144,94 @@ function dismissNotification(notification) {
   }, 300);
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', initializeApp);/**
+ *
+ Extract and parse JSON from AI response with multiple fallback methods
+ */
+function extractAndParseJSON(response) {
+  let jsonString = response.trim();
+  
+  // Method 1: Try to extract from markdown code blocks
+  const codeBlockMatch = jsonString.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (codeBlockMatch) {
+    jsonString = codeBlockMatch[1].trim();
+  }
+  
+  // Method 2: Try to find JSON object in the response
+  const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    jsonString = jsonMatch[0];
+  }
+  
+  // Method 3: Clean up common issues
+  jsonString = jsonString
+    .replace(/^[^{]*/, '') // Remove text before first {
+    .replace(/[^}]*$/, '') // Remove text after last }
+    .replace(/,(\s*[}\]])/g, '$1') // Remove trailing commas
+    .trim();
+  
+  return JSON.parse(jsonString);
+}
+
+/**
+ * Create a mind map from plain text as fallback
+ */
+function createMindMapFromText(text, originalTopic) {
+  console.log('Creating fallback mind map from text:', text);
+  
+  // Use the original topic as root
+  const root = originalTopic || 'Mind Map';
+  
+  // Extract key concepts from the text
+  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 10);
+  const concepts = [];
+  
+  // Simple keyword extraction
+  sentences.forEach(sentence => {
+    const words = sentence.toLowerCase().split(/\s+/);
+    const importantWords = words.filter(word => 
+      word.length > 4 && 
+      !['that', 'this', 'with', 'from', 'they', 'have', 'been', 'will', 'would', 'could', 'should'].includes(word)
+    );
+    
+    if (importantWords.length > 0) {
+      concepts.push(importantWords.slice(0, 3).join(' '));
+    }
+  });
+  
+  // Group concepts into branches
+  const branches = [];
+  const maxBranches = Math.min(4, Math.max(2, Math.ceil(concepts.length / 3)));
+  
+  for (let i = 0; i < maxBranches; i++) {
+    const startIndex = i * Math.ceil(concepts.length / maxBranches);
+    const endIndex = Math.min(startIndex + Math.ceil(concepts.length / maxBranches), concepts.length);
+    const branchConcepts = concepts.slice(startIndex, endIndex);
+    
+    if (branchConcepts.length > 0) {
+      branches.push({
+        title: `Key Concept ${i + 1}`,
+        children: branchConcepts.slice(0, 4)
+      });
+    }
+  }
+  
+  // Fallback if no concepts extracted
+  if (branches.length === 0) {
+    branches.push(
+      {
+        title: 'Main Ideas',
+        children: ['Concept 1', 'Concept 2', 'Concept 3']
+      },
+      {
+        title: 'Details',
+        children: ['Detail 1', 'Detail 2', 'Detail 3']
+      }
+    );
+  }
+  
+  return {
+    root: root,
+    branches: branches
+  };
+}

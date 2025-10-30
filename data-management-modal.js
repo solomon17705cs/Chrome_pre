@@ -451,30 +451,22 @@ class DataManagementModal {
      * Open the modal
      */
     open() {
-        if (this.isOpen) return;
+  if (this.isOpen) return;
+  this.isOpen = true;
+  this.modal.style.display = 'flex';
+  this.modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
 
-        this.isOpen = true;
-        this.modal.style.display = 'flex';
-        this.modal.setAttribute('aria-hidden', 'false');
-        
-        // Focus management
-        const firstFocusable = this.modal.querySelector('.data-modal-close');
-        firstFocusable.focus();
+  // Load data AFTER modal is visible
+  setTimeout(() => {
+    this.refreshData();
+    this.startInactivityTimer();
+  }, 100);
 
-        // Prevent body scroll
-        document.body.style.overflow = 'hidden';
-
-        // Load and display data
-        this.refreshData();
-
-        // Animation
-        requestAnimationFrame(() => {
-            this.modal.classList.add('modal-open');
-        });
-
-        // Auto-close after 30 seconds of inactivity (optional - can be disabled)
-        this.startInactivityTimer();
-    }
+  // Focus first element
+  const firstFocusable = this.modal.querySelector('.data-modal-close');
+  if (firstFocusable) firstFocusable.focus();
+}
 
     /**
      * Start inactivity timer for auto-close

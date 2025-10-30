@@ -26,10 +26,19 @@
       return;
     }
 
+    // Check if switchMode function is available
+    if (typeof window.switchMode !== 'function' && typeof switchMode !== 'function') {
+      console.warn('switchMode function not yet available, will retry...');
+      // Retry after a short delay
+      setTimeout(initializeDropdown, 200);
+      return;
+    }
+
     console.log('Dropdown elements found:', {
       toggle: !!dropdownToggle,
       menu: !!dropdownMenu,
-      items: dropdownItems.length
+      items: dropdownItems.length,
+      switchModeAvailable: typeof window.switchMode === 'function' || typeof switchMode === 'function'
     });
 
     // Toggle dropdown
@@ -43,11 +52,18 @@
     // Handle dropdown item selection
     dropdownItems.forEach(function(item) {
       item.addEventListener('click', function(e) {
+        e.preventDefault();
         e.stopPropagation();
         const mode = item.dataset.mode;
-        console.log('Mode selected:', mode);
-        selectMode(mode);
+        console.log('Dropdown item clicked, mode:', mode);
+        
+        // Close dropdown first
         toggleDropdown(false);
+        
+        // Then select mode with a small delay to ensure dropdown closes
+        setTimeout(function() {
+          selectMode(mode);
+        }, 50);
       });
     });
 
@@ -101,37 +117,38 @@
     }
 
     function selectMode(mode) {
-      const currentModeText = document.querySelector('.current-mode-text');
+      console.log('Dropdown selectMode called with:', mode);
       
-      // Update current mode display
-      const modeLabels = {
-        'chat': '💬 Chat',
-        'mindmap': '🧠 Mind Map',
-        'roadmap': '🗺️ Roadmap',
-        'flashcard': '🃏 Cards',
-        'powerpoint': '📊 Slides'
-      };
-
-      const selectedLabel = modeLabels[mode] || '💬 Chat';
-
-      if (currentModeText) {
-        currentModeText.textContent = selectedLabel;
-        console.log('Updated mode text to:', selectedLabel);
-      }
-
-      // Update active state
-      dropdownItems.forEach(function(item) {
-        item.classList.toggle('active', item.dataset.mode === mode);
-      });
-
-      // Call existing switchMode function if it exists
+      // Call the main switchMode function which handles everything
       if (typeof window.switchMode === 'function') {
+        console.log('Calling window.switchMode');
         window.switchMode(mode);
       } else if (typeof switchMode === 'function') {
+        console.log('Calling global switchMode');
         switchMode(mode);
+      } else {
+        console.error('switchMode function not found!');
+        // Fallback: just update the dropdown display
+        const currentModeText = document.querySelector('.current-mode-text');
+        const modeLabels = {
+          'chat': 'Chat',
+          'mindmap': 'Mind Map',
+          'roadmap': 'Roadmap',
+          'flashcard': 'Cards',
+          'powerpoint': 'Slides'
+        };
+
+        if (currentModeText) {
+          currentModeText.textContent = modeLabels[mode] || 'Chat';
+        }
+
+        // Update active state for dropdown items only
+        dropdownItems.forEach(function(item) {
+          item.classList.toggle('active', item.dataset.mode === mode);
+        });
       }
 
-      console.log('Switched to ' + mode + ' mode');
+      console.log('Dropdown mode selection completed for:', mode);
     }
 
     function focusFirstDropdownItem() {
@@ -158,12 +175,17 @@
     console.log('Dropdown functionality initialized successfully!');
   }
 
-  // Initialize when DOM is ready
+  // Initialize when DOM is ready and after a small delay to ensure app.js is loaded
+  function delayedInit() {
+    // Small delay to ensure all scripts are loaded
+    setTimeout(initializeDropdown, 100);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeDropdown);
+    document.addEventListener('DOMContentLoaded', delayedInit);
   } else {
     // DOM is already ready
-    initializeDropdown();
+    delayedInit();
   }
 
 })();

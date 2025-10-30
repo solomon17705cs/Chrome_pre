@@ -127,27 +127,26 @@ async checkAvailability() {
   getSystemPrompt() {
     switch (this.currentMode) {
       case 'mindmap':
-  return `You are an expert at creating visual mind maps. Your task is to generate a hierarchical mind map as a JSON object with the following structure:
+  return `You are a JSON-only mind map generator. Your task is to generate a hierarchical mind map as a JSON object with this structure:
 {
-  "root": "Central Topic Title",
+  "root": "Central Topic",
   "branches": [
     {
-      "title": "Main Branch 1",
+      "title": "Main Branch",
       "children": ["Detail 1", "Detail 2"]
     }
   ]
 }
 Rules:
-1. The root must be a short, clear title.
-2. Include 2-4 main branches.
-3. Each branch must have 2-4 children (leaf details).
-4. Use concise, meaningful text.
-5. Return ONLY valid JSON. No extra text, no markdown, no explanation.
-Now create a mind map for:`;
+- If the user's topic is too vague (e.g., "computer", "science", "AI"), respond with telling the very very core components or the necessary things for that specific topic}
+- NEVER add explanations, apologies, or markdown.
+- NEVER wrap JSON in code blocks (like \`\`\`json).
+- Return ONLY valid JSON. No extra text before or after.
+Now generate a mind map for:`;
 
       case 'roadmap':
         return `Create a detailed roadmap with clear steps and timelines. Format as:
-# Project Roadmap
+# Project/Core name Roadmap
 
 ## Phase 1: [Name] (Timeline)
 - Objective: [Goal]
@@ -197,7 +196,15 @@ Create 5-8 slides with clear, concise content.`;
   }
 
   setMode(mode) {
+    console.log('Setting mode from', this.currentMode, 'to', mode);
     this.currentMode = mode;
+    
+    // Destroy existing session to force recreation with new system prompt
+    if (this.session) {
+      console.log('Destroying existing session for mode change');
+      this.session.destroy();
+      this.session = null;
+    }
   }
 
   addFile(file) {
@@ -224,10 +231,210 @@ Create 5-8 slides with clear, concise content.`;
   }
 }
 
+/**
+ * Parses AI-generated slide content to identify individual slides using "SLIDE X:" markers
+ * @param {string} text - The AI-generated text content
+ * @returns {Object} Object containing slides array, validation status, and original content
+ */
+function parseSlides(text) {
+  const result = {
+    slides: [],
+    isValid: false,
+    rawContent: text || '',
+    errors: []
+  };
+
+  // Input validation
+  if (!text || typeof text !== 'string') {
+    result.errors.push('Invalid input: text must be a non-empty string');
+    return result;
+  }
+
+  if (text.trim().length === 0) {
+    result.errors.push('Empty content provided');
+    return result;
+  }
+
+  // Regex to match slide markers like "SLIDE 1:", "SLIDE 2:", etc.
+  const slideMarkerRegex = /^SLIDE\s+(\d+):\s*(.*)$/gim;
+  const slides = [];
+  let match;
+
+  // Find all slide markers and their positions
+  const markers = [];
+  while ((match = slideMarkerRegex.exec(text)) !== null) {
+    const slideNumber = parseInt(match[1]);
+    
+    // Validate slide number
+    if (isNaN(slideNumber) || slideNumber <= 0) {
+      result.errors.push(`Invalid slide number: ${match[1]}`);
+      continue;
+    }
+
+    markers.push({
+      slideNumber: slideNumber,
+      title: match[2].trim(),
+      startIndex: match.index,
+      endIndex: slideMarkerRegex.lastIndex
+    });
+  }
+
+  // If no slide markers found, return with error
+  if (markers.length === 0) {
+    result.errors.push('No valid slide markers found (expected format: "SLIDE X: Title")');
+    return result;
+  }
+
+  // Check for duplicate slide numbers
+  const slideNumbers = markers.map(m => m.slideNumber);
+  const duplicates = slideNumbers.filter((num, index) => slideNumbers.indexOf(num) !== index);
+  if (duplicates.length > 0) {
+    result.errors.push(`Duplicate slide numbers found: ${[...new Set(duplicates)].join(', ')}`);
+  }
+
+  // Extract content for each slide
+  for (let i = 0; i < markers.length; i++) {
+    const currentMarker = markers[i];
+    const nextMarker = markers[i + 1];
+    
+    // Content starts after the current slide marker line
+    const contentStart = currentMarker.endIndex;
+    // Content ends at the start of the next slide marker, or end of text
+    const contentEnd = nextMarker ? nextMarker.startIndex : text.length;
+    
+    // Extract and clean the content
+    let content = text.substring(contentStart, contentEnd).trim();
+    
+    // Remove any leading/trailing whitespace and normalize line breaks
+    content = content.replace(/^\n+|\n+$/g, '').trim();
+    
+    // Validate slide content
+    if (!content || content.length === 0) {
+      result.errors.push(`Slide ${currentMarker.slideNumber} has empty content`);
+      content = 'No content available for this slide.';
+    }
+
+    // Validate slide title
+    let title = currentMarker.title;
+    if (!title || title.length === 0) {
+      title = `Slide ${currentMarker.slideNumber}`;
+      result.errors.push(`Slide ${currentMarker.slideNumber} has no title, using default`);
+    }
+
+    // Create slide object
+    const slide = {
+      title: title,
+      content: content,
+      slideNumber: currentMarker.slideNumber,
+      isValid: content.length > 0 && title.length > 0
+    };
+    
+    slides.push(slide);
+  }
+
+  // Sort slides by slide number to ensure correct order
+  slides.sort((a, b) => a.slideNumber - b.slideNumber);
+  
+  // Check for missing slide numbers (gaps in sequence)
+  if (slides.length > 1) {
+    for (let i = 1; i < slides.length; i++) {
+      const expectedNumber = slides[i - 1].slideNumber + 1;
+      if (slides[i].slideNumber !== expectedNumber) {
+        result.errors.push(`Missing slide number ${expectedNumber} in sequence`);
+      }
+    }
+  }
+
+  result.slides = slides;
+  result.isValid = slides.length > 0 && slides.every(slide => slide.isValid);
+  
+  return result;
+}
+
+/**
+ * Validates parsed slide structure and provides fallback handling
+ * @param {Object} parseResult - Result from parseSlides function
+ * @returns {Object} Validated result with fallback options
+ */
+function validateSlideContent(parseResult) {
+  if (!parseResult || typeof parseResult !== 'object') {
+    return {
+      isValid: false,
+      slides: [],
+      shouldFallback: true,
+      fallbackContent: '',
+      errors: ['Invalid parse result']
+    };
+  }
+
+  const { slides, isValid, rawContent, errors } = parseResult;
+  
+  // If parsing completely failed, recommend fallback to markdown
+  if (!slides || slides.length === 0) {
+    return {
+      isValid: false,
+      slides: [],
+      shouldFallback: true,
+      fallbackContent: rawContent,
+      errors: errors || ['No slides could be parsed']
+    };
+  }
+
+  // If some slides are invalid but we have valid ones, proceed with valid slides
+  const validSlides = slides.filter(slide => slide.isValid);
+  const hasValidSlides = validSlides.length > 0;
+
+  return {
+    isValid: hasValidSlides,
+    slides: hasValidSlides ? validSlides : slides,
+    shouldFallback: !hasValidSlides,
+    fallbackContent: rawContent,
+    errors: errors || [],
+    warnings: hasValidSlides && validSlides.length < slides.length ? 
+      [`${slides.length - validSlides.length} slides had issues and were filtered out`] : []
+  };
+}
+
+/**
+ * Renders a single slide container with proper styling and content
+ * @param {Object} slide - Slide object with title, content, and slideNumber
+ * @param {number} index - Index of the slide in the array
+ * @returns {HTMLElement} DOM element for the slide container
+ */
+function renderSlideContainer(slide, index) {
+  // Create the main slide container
+  const slideContainer = document.createElement('div');
+  slideContainer.className = 'slide-container';
+  
+  // Create slide title element
+  const slideTitle = document.createElement('div');
+  slideTitle.className = 'slide-title';
+  slideTitle.textContent = slide.title;
+  
+  // Create slide content element
+  const slideContent = document.createElement('div');
+  slideContent.className = 'slide-content';
+  slideContent.innerHTML = formatMarkdown(slide.content);
+  
+  // Append title and content to container
+  slideContainer.appendChild(slideTitle);
+  slideContainer.appendChild(slideContent);
+  
+  return slideContainer;
+}
+
 function formatPromptOutput(text, mode) {
   const container = document.createElement('div');
   container.className = 'output-container';
-  document.getElementById('exportToSlidesBtn').style.display = 'block';
+  
+  // Only show export button for powerpoint mode
+  const exportBtn = document.getElementById('exportToSlidesBtn');
+  if (exportBtn) {
+    exportBtn.style.display = mode === 'powerpoint' ? 'block' : 'none';
+  }
+  
+  // Store slide data for export functionality
+  let slideDataForExport = null;
 
   switch (mode) {
     case 'mindmap':
@@ -277,6 +484,112 @@ function formatPromptOutput(text, mode) {
         }
       });
       break;
+
+    case 'powerpoint':
+      const parseResult = parseSlides(text);
+      const validationResult = validateSlideContent(parseResult);
+      
+      if (validationResult.shouldFallback) {
+        // Fall back to markdown rendering if parsing failed
+        container.innerHTML = formatMarkdown(text);
+        // For fallback, try to extract basic slide data from raw text
+        slideDataForExport = extractSlideDataFromText(text);
+      } else {
+        // Render slides in containers
+        validationResult.slides.forEach((slide, index) => {
+          const slideContainer = renderSlideContainer(slide, index);
+          container.appendChild(slideContainer);
+        });
+        // Store parsed slide data for export
+        slideDataForExport = validationResult.slides.map(slide => ({
+          title: slide.title,
+          content: slide.content
+        }));
+      }
+      break;
+
+    default:
+      container.innerHTML = formatMarkdown(text);
+  }
+
+  // Set up export button functionality for powerpoint mode
+  if (mode === 'powerpoint' && slideDataForExport) {
+    setupExportButtonHandler(slideDataForExport);
+  }
+
+  return container;
+}
+
+/**
+ * Sets up the export button click handler with the current slide data
+ * @param {Array} slideData - Array of slide objects with title and content
+ */
+function setupExportButtonHandler(slideData) {
+  const exportBtn = document.getElementById('exportToSlidesBtn');
+  if (!exportBtn) return;
+  
+  // Remove any existing event listeners
+  const newExportBtn = exportBtn.cloneNode(true);
+  exportBtn.parentNode.replaceChild(newExportBtn, exportBtn);
+  
+  // Add new event listener with current slide data
+  newExportBtn.addEventListener('click', () => {
+    exportToGoogleSlides(slideData);
+  });
+}
+
+/**
+ * Extracts slide data from raw text for fallback scenarios
+ * @param {string} text - Raw text content
+ * @returns {Array} Array of slide objects
+ */
+function extractSlideDataFromText(text) {
+  const slides = [];
+  
+  // Try to parse basic slide structure from text
+  const lines = text.split('\n');
+  let currentSlide = null;
+  
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    
+    // Check for slide markers
+    const slideMatch = trimmedLine.match(/^SLIDE\s+(\d+):\s*(.*)$/i);
+    if (slideMatch) {
+      // Save previous slide if exists
+      if (currentSlide) {
+        slides.push(currentSlide);
+      }
+      
+      // Start new slide
+      currentSlide = {
+        title: slideMatch[2] || `Slide ${slideMatch[1]}`,
+        content: ''
+      };
+    } else if (currentSlide && trimmedLine) {
+      // Add content to current slide
+      if (currentSlide.content) {
+        currentSlide.content += '\n';
+      }
+      currentSlide.content += trimmedLine;
+    }
+  }
+  
+  // Add the last slide
+  if (currentSlide) {
+    slides.push(currentSlide);
+  }
+  
+  // If no slides found, create a single slide with all content
+  if (slides.length === 0) {
+    slides.push({
+      title: 'Presentation',
+      content: text
+    });
+  }
+  
+  return slides;
+}
 
 async function exportToGoogleSlides(slideData) {
   try {
@@ -408,13 +721,6 @@ async function exportToGoogleSlides(slideData) {
     console.error('Export failed:', error);
     alert('❌ Failed to export: ' + (error.message || 'Check console for details'));
   }
-}
-
-    default:
-      container.innerHTML = formatMarkdown(text);
-  }
-
-  return container;
 }
 
 function formatMarkdown(text) {
@@ -886,47 +1192,84 @@ function renderMindMapFromJSON(data) {
   const container = document.createElement('div');
   container.className = 'mindmap-json-container';
 
-  // Root node
-  const rootNode = document.createElement('div');
-  rootNode.className = 'mindmap-node root-node';
-  rootNode.textContent = data.root;
+  // Render root node (always expanded by default, but can be collapsed)
+  const rootNode = createCollapsibleNode(
+    data.root,
+    true, // isRoot
+    'root-node'
+  );
   container.appendChild(rootNode);
 
-  // Branches
+  // Render branches under root
+  const rootChildrenContainer = document.createElement('div');
+  rootChildrenContainer.className = 'mindmap-children';
+  rootChildrenContainer.style.marginLeft = '30px';
+  rootChildrenContainer.style.display = 'block'; // Start expanded
+
   if (data.branches && Array.isArray(data.branches)) {
-    const branchesContainer = document.createElement('div');
-    branchesContainer.className = 'mindmap-branches';
-    branchesContainer.style.marginLeft = '30px';
-
     data.branches.forEach(branch => {
-      const branchEl = document.createElement('div');
-      branchEl.className = 'mindmap-branch';
+      const branchNode = createCollapsibleNode(branch.title, false, 'branch-title');
+      rootChildrenContainer.appendChild(branchNode);
 
-      const branchTitle = document.createElement('div');
-      branchTitle.className = 'mindmap-node branch-title';
-      branchTitle.textContent = branch.title;
-      branchEl.appendChild(branchTitle);
+      // Children container for this branch
+      const branchChildrenContainer = document.createElement('div');
+      branchChildrenContainer.className = 'mindmap-children';
+      branchChildrenContainer.style.marginLeft = '20px';
+      branchChildrenContainer.style.display = 'none'; // Start collapsed
 
       if (branch.children && Array.isArray(branch.children)) {
-        const childrenContainer = document.createElement('div');
-        childrenContainer.className = 'mindmap-children';
-        childrenContainer.style.marginLeft = '20px';
-
         branch.children.forEach(child => {
-          const childEl = document.createElement('div');
-          childEl.className = 'mindmap-node child-node';
-          childEl.textContent = child;
-          childrenContainer.appendChild(childEl);
+          const childNode = document.createElement('div');
+          childNode.className = 'mindmap-node child-node';
+          childNode.textContent = child;
+          branchChildrenContainer.appendChild(childNode);
         });
-
-        branchEl.appendChild(childrenContainer);
       }
 
-      branchesContainer.appendChild(branchEl);
-    });
+      rootChildrenContainer.appendChild(branchChildrenContainer);
 
-    container.appendChild(branchesContainer);
+      // Attach toggle behavior to branch node
+      setupToggleBehavior(branchNode, branchChildrenContainer);
+    });
   }
 
+  container.appendChild(rootChildrenContainer);
+
+  // Attach toggle behavior to root node
+  setupToggleBehavior(rootNode, rootChildrenContainer);
+
   return container;
+}
+
+/**
+ * Creates a styled, collapsible node element
+ */
+function createCollapsibleNode(title, isRoot, className) {
+  const node = document.createElement('div');
+  node.className = `mindmap-node ${className}`;
+  node.innerHTML = `
+    <span class="node-content">${title}</span>
+    <span class="expand-arrow">${isRoot ? '▼' : '▶'}</span>
+  `;
+  return node;
+}
+
+/**
+ * Sets up click-to-toggle behavior for a node
+ */
+function setupToggleBehavior(node, childrenContainer) {
+  const expandArrow = node.querySelector('.expand-arrow');
+  
+  // Hide arrow for leaf nodes (no children container)
+  if (!childrenContainer) {
+    if (expandArrow) expandArrow.style.display = 'none';
+    return;
+  }
+
+  node.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isVisible = childrenContainer.style.display === 'block';
+    childrenContainer.style.display = isVisible ? 'none' : 'block';
+    expandArrow.textContent = isVisible ? '▶' : '▼';
+  });
 }

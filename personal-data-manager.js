@@ -519,7 +519,7 @@ class PersonalDataManager {
         
         // Name extraction patterns
         const namePatterns = [
-            /(?:my name is|i'm|i am|call me|i go by)\s+([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
+            /(?:my name is|myself|This is|this is|i'm|i am|call me|i go by)\s+([a-zA-Z]+(?:\s+[a-zA-Z]+)?)/i,
             /(?:i'm|i am)\s+([a-zA-Z]+)(?:\s|,|\.)/i
         ];
         
@@ -537,7 +537,7 @@ class PersonalDataManager {
         
         // Age extraction patterns
         const agePatterns = [
-            /(?:i'm|i am|my age is|i'm about)\s+(\d+)\s*(?:years old|years|yrs old|yrs)?/i,
+            /(?:i'm|i am|im |my age is|i'm about)\s+(\d+)\s*(?:years old|years|yrs old|yrs)?/i,
             /(?:age|aged)\s+(\d+)/i
         ];
         
@@ -554,7 +554,7 @@ class PersonalDataManager {
         
         // Location extraction patterns
         const locationPatterns = [
-            /(?:i live in|i'm from|i'm in|i'm based in|located in|i'm currently in)\s+([a-zA-Z\s,]+?)(?:\.|,|$|\s+(?:and|but|so|because))/i,
+            /(?:i live in|i'm from|im form|i'm from|i'm in|i'm based in|located in|i'm currently in)\s+([a-zA-Z\s,]+?)(?:\.|,|$|\s+(?:and|but|so|because))/i,
             /(?:from|in)\s+([A-Z][a-zA-Z\s,]+?)(?:\.|,|$|\s+(?:and|but|so|because))/
         ];
         
@@ -572,7 +572,7 @@ class PersonalDataManager {
         
         // Occupation extraction patterns
         const occupationPatterns = [
-            /(?:i work as|i'm a|i am a|my job is|i work in|my profession is|my career is)\s+(?:a\s+)?([a-zA-Z\s]+?)(?:\.|,|$|\s+(?:and|but|so|at|in))/i,
+            /(?:i work as|hobby|i'm a|im a|i am a|my job is|i work in|my profession is|my career is)\s+(?:a\s+)?([a-zA-Z\s]+?)(?:\.|,|$|\s+(?:and|but|so|at|in))/i,
             /(?:i'm|i am)\s+(?:a\s+)?([a-zA-Z\s]+?)(?:\s+(?:by|at|in|for)\s+)/i
         ];
         
@@ -632,7 +632,7 @@ class PersonalDataManager {
         
         // Likes patterns
         const likePatterns = [
-            /(?:i like|i love|i enjoy|i'm into|i prefer|i'm fond of|i adore)\s+([^.!?]+?)(?:\.|!|\?|$|,\s*(?:and|but|because|so))/gi,
+            /(?:i like|goal|i love|i enjoy|i'm into|i prefer|i'm fond of|i adore)\s+([^.!?]+?)(?:\.|!|\?|$|,\s*(?:and|but|because|so))/gi,
             /(?:i really like|i absolutely love|i'm passionate about)\s+([^.!?]+?)(?:\.|!|\?|$|,\s*(?:and|but|because|so))/gi,
             /([^.!?]+?)\s+(?:is|are)\s+(?:great|amazing|awesome|fantastic|wonderful|my favorite)/gi
         ];

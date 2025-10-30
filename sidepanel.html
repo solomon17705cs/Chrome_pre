@@ -17,7 +17,7 @@
     <header class="header" role="banner">
       <h1 class="header-title">AIO Assistant</h1>
       <div class="header-controls">
-        <button class="personal-data-btn header-profile-btn" id="personalDataBtn" title="Manage personal data">👤</button>
+        
         <div class="model-status" id="modelStatus" role="status" aria-live="polite">
           <span class="status-dot" aria-label="Model status indicator"></span>
           <span class="status-text">Checking...</span>
@@ -27,13 +27,13 @@
 
     <nav class="nav-tabs" role="tablist" aria-label="AI Assistant features">
       <button class="tab-btn active" data-tab="chat" role="tab" aria-selected="true" aria-controls="chat-tab"
-        id="chat-tab-btn"><span>💬 Chat</span></button>
+        id="chat-tab-btn"><span>Chat</span></button>
       <button class="tab-btn" data-tab="summarize" role="tab" aria-selected="false" aria-controls="summarize-tab"
-        id="summarize-tab-btn"><span>📝 Summarize</span></button>
+        id="summarize-tab-btn"><span>Summarize</span></button>
       <button class="tab-btn" data-tab="write" role="tab" aria-selected="false" aria-controls="write-tab"
-        id="write-tab-btn"><span>✍️ Write</span></button>
+        id="write-tab-btn"><span>Write</span></button>
       <button class="tab-btn" data-tab="rewrite" role="tab" aria-selected="false" aria-controls="rewrite-tab"
-        id="rewrite-tab-btn"><span>🔄 Rewrite</span></button>
+        id="rewrite-tab-btn"><span>Rewrite</span></button>
     </nav>
 
     <main class="content-wrapper" id="main-content">
@@ -41,20 +41,16 @@
         <div class="chat-mode-dropdown" role="group" aria-label="Chat modes">
           <button class="dropdown-toggle" id="modeDropdownToggle" aria-haspopup="true" aria-expanded="false"
             aria-label="Select chat mode">
-            <span class="current-mode-text">💬 Chat</span>
+            <span class="current-mode-text">Chat</span>
             <span class="dropdown-arrow" aria-hidden="true">▼</span>
           </button>
           <div class="dropdown-menu" id="modeDropdownMenu" role="menu" aria-labelledby="modeDropdownToggle">
-            <button class="dropdown-item active" data-mode="chat" role="menuitem" aria-label="Chat mode">💬
-              Chat</button>
-            <button class="dropdown-item" data-mode="mindmap" role="menuitem" aria-label="Mind Map mode">🧠 Mind
+            <button class="dropdown-item active" data-mode="chat" role="menuitem" aria-label="Chat mode">Chat</button>
+            <button class="dropdown-item" data-mode="mindmap" role="menuitem" aria-label="Mind Map mode">Mind
               Map</button>
-            <button class="dropdown-item" data-mode="roadmap" role="menuitem" aria-label="Roadmap mode">🗺️
-              Roadmap</button>
-            <button class="dropdown-item" data-mode="flashcard" role="menuitem" aria-label="Flashcard mode">🃏
-              Cards</button>
-            <button class="dropdown-item" data-mode="powerpoint" role="menuitem" aria-label="PowerPoint mode">📊
-              Slides</button>
+            <button class="dropdown-item" data-mode="roadmap" role="menuitem" aria-label="Roadmap mode">Roadmap</button>
+            <button class="dropdown-item" data-mode="flashcard" role="menuitem" aria-label="Flashcard mode">Cards</button>
+            <button class="dropdown-item" data-mode="powerpoint" role="menuitem" aria-label="PowerPoint mode">Slides</button>
           </div>
         </div>
 
@@ -67,7 +63,10 @@
         </div>
 
         <div class="input-area">
-          <button class="attach-btn" id="attachBtn" title="Attach file">📎</button>
+          <label class="attach-btn" for="fileInput" id="attachBtn" title="Attach file">
+  Attach
+  <input type="file" id="fileInput" accept="image/*,audio/*" multiple style="display: none;">
+</label>
           <textarea id="chatInput" class="chat-input" placeholder="Type your message..." rows="1"></textarea>
           <button class="send-btn" id="sendBtn">Send</button>
         </div>
