@@ -38,7 +38,7 @@
 
 ### 🌟 **Community & Support**
 
-![GitHub Stars](https://img.shields.io/badge/GitHub-⭐%20Star%20This%20Repo-yellow?style=for-the-badge&logo=github)
+![GitHub Stars](https://img.shields.io/github/stars/solomon17705cs/Chrome_pre?style=for-the-badge&logo=github)
 ![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen?style=for-the-badge&logo=heart)
 
@@ -319,11 +319,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Made with ❤️ by the AIO Assistant**
+**Made with ❤️ by the AIO Assistant Community**
 
 *Empowering users with privacy-first AI assistance*
 
-**© 2024 AIO Assistant. Licensed under the MIT License.**
+**© 2024 AIO Assistant Contributors. Licensed under the MIT License.**
 
 </div>TL;DR**: Very short "too long; didn't read" summary
   - **Teaser**: Engaging preview to hook readers
@@ -586,11 +586,13 @@ Advanced personal information system with intelligent extraction and organizatio
 - **High memory usage**: Restart Chrome, close unnecessary tabs, clear data
 
 #### **Interface Problems**
+- **Sidebar won't open**: Right-click extension icon → "Open side panel"
 - **Layout issues**: Reset zoom to 100%, clear browser cache
 
 ### 🆘 **Getting Help**
 - **GitHub Issues**: Report bugs and request features
 - **Documentation**: This README file
+- **Community**: Discord server and Reddit community
 
 ---
 
@@ -610,6 +612,9 @@ We welcome contributions from developers, designers, and users! Here's how you c
 2. Create a feature branch for your changes
 3. Make your improvements
 4. Submit a pull request with detailed description
+
+### 🏆 **Recognition**
+Contributors are recognized in release notes, project documentation, and community highlights.
 
 ---
 
@@ -642,6 +647,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**© 2025 AIO Assistant. Licensed under the MIT License.**
+**© 2024 AIO Assistant Contributors. Licensed under the MIT License.**
 
 </div>
