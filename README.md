@@ -586,13 +586,11 @@ Advanced personal information system with intelligent extraction and organizatio
 - **High memory usage**: Restart Chrome, close unnecessary tabs, clear data
 
 #### **Interface Problems**
-- **Sidebar won't open**: Right-click extension icon → "Open side panel"
 - **Layout issues**: Reset zoom to 100%, clear browser cache
 
 ### 🆘 **Getting Help**
 - **GitHub Issues**: Report bugs and request features
 - **Documentation**: This README file
-- **Community**: Discord server and Reddit community
 
 ---
 
@@ -612,9 +610,6 @@ We welcome contributions from developers, designers, and users! Here's how you c
 2. Create a feature branch for your changes
 3. Make your improvements
 4. Submit a pull request with detailed description
-
-### 🏆 **Recognition**
-Contributors are recognized in release notes, project documentation, and community highlights.
 
 ---
 
@@ -647,6 +642,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**© 2024 AIO Assistant Contributors. Licensed under the MIT License.**
+**© 2025 AIO Assistant. Licensed under the MIT License.**
 
 </div>
