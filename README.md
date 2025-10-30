@@ -323,7 +323,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 *Empowering users with privacy-first AI assistance*
 
-**© 2024 AIO Assistant Contributors. Licensed under the MIT License.**
+**© 2024 AIO Assistant. Licensed under the MIT License.**
 
 </div>TL;DR**: Very short "too long; didn't read" summary
   - **Teaser**: Engaging preview to hook readers
