@@ -1930,7 +1930,7 @@ ncryption Controls */
   gap: var(--space-lg);
 }
 
-.encryption-status {
+.encryption-status {}
 /* Enhanced No Data State */
 .no-data {
   text-align: center;
@@ -2439,7 +2439,7 @@ ata button */
     margin-left: 0;
     justify-content: center;
   }
-}/
+}
 * Force buttons to be functional */
 .data-item-actions {
   opacity: 1 !important;
