@@ -669,11 +669,24 @@ async function handleSummarize() {
     const stream = await summarizerHandler.summarizeStreaming(input);
 
     let fullSummary = '';
+    let isFirstChunk = true;
+    
     for await (const chunk of stream) {
       fullSummary += chunk;
+      
+      // Clear loading indicator on first chunk only
+      if (isFirstChunk) {
+        output.innerHTML = '';
+        isFirstChunk = false;
+      }
+      
       const formatted = formatSummaryOutput(fullSummary, summarizerHandler.currentOptions.type);
-      output.innerHTML = '';
-      output.appendChild(formatted);
+      
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        output.innerHTML = '';
+        output.appendChild(formatted);
+      });
     }
 
   } catch (error) {
@@ -747,11 +760,13 @@ async function handleWrite() {
       
       // Format and display the accumulated text
       const formatted = formatWriterOutput(fullText);
-      output.innerHTML = '';
-      output.appendChild(formatted);
       
-      // Ensure the output is visible
-      output.style.display = 'block';
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        output.innerHTML = '';
+        output.appendChild(formatted);
+        output.style.display = 'block';
+      });
     }
 
   } catch (error) {
@@ -831,11 +846,13 @@ async function handleRewrite() {
       
       // Format and display the accumulated text
       const formatted = formatRewriterOutput(fullText);
-      output.innerHTML = '';
-      output.appendChild(formatted);
       
-      // Ensure the output is visible
-      output.style.display = 'block';
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        output.innerHTML = '';
+        output.appendChild(formatted);
+        output.style.display = 'block';
+      });
     }
 
   } catch (error) {
