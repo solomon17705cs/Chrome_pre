@@ -1,8 +1,8 @@
-# 🤖 AIO - All-In-One AI Assistant
+# AIO - All-In-One AI Assistant
 
 <div align="center">
 
-![AIO Logo](https://img.shields.io/badge/AIO-All--In--One%20Assistant-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiM2MzY2ZjEiLz48dGV4dCB4PSI1MCIgeT0iNjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyOCIgZm9udC13ZWlnaHQ9ImJvbGQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIj5BSU88L3RleHQ+PC9zdmc+)
+![AIO Logo](./logo.svg)
 
 **A Revolutionary Chrome Extension That Brings Complete AI Capabilities Directly to Your Browser**
 

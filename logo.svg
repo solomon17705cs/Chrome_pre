@@ -1,0 +1,30 @@
+<svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="aioGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    
+    <!-- Logo Circle -->
+    <circle cx="40" cy="40" r="35" fill="url(#aioGradient)" opacity="0.9"/>
+    
+    <!-- AIO Text in Circle -->
+    <text x="40" y="48" font-family="Arial, sans-serif" font-size="18" 
+          font-weight="bold" text-anchor="middle" fill="white">AIO</text>
+    
+    <!-- Main Title -->
+    <text x="90" y="30" font-family="Arial, sans-serif" font-size="24" 
+          font-weight="bold" fill="#1f2937">AIO Assistant</text>
+    
+    <!-- Subtitle -->
+    <text x="90" y="50" font-family="Arial, sans-serif" font-size="14" 
+          fill="#6b7280">All-In-One AI Assistant</text>
+    
+    <!-- Connection dots -->
+    <circle cx="25" cy="25" r="2" fill="white" opacity="0.8"/>
+    <circle cx="55" cy="25" r="2" fill="white" opacity="0.8"/>
+    <circle cx="25" cy="55" r="2" fill="white" opacity="0.8"/>
+    <circle cx="55" cy="55" r="2" fill="white" opacity="0.8"/>
+</svg>
