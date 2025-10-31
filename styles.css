@@ -1935,6 +1935,36 @@ textarea {
   min-height: 60px;
 }
 
+/* Enhanced Scrollbar for Text Input Areas */
+.text-input {
+  overflow-y: auto;
+  resize: vertical;
+}
+
+.text-input::-webkit-scrollbar {
+  width: 8px;
+}
+
+.text-input::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+  border-radius: var(--radius-sm);
+  margin: var(--space-xs);
+}
+
+.text-input::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-normal) var(--easing-ease);
+}
+
+.text-input::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+.text-input::-webkit-scrollbar-thumb:active {
+  background: var(--color-primary);
+}
+
 /* Input Focus States */
 .chat-input:focus,
 .text-input:focus,
