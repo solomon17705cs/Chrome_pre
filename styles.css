@@ -665,7 +665,7 @@ body {
 }
 
 .output-area.loading-skeleton {
-  background: transparent;
+  background: var(--color-surface);
   padding: var(--space-lg);
 }
 
@@ -1935,36 +1935,6 @@ textarea {
   min-height: 60px;
 }
 
-/* Enhanced Scrollbar for Text Input Areas */
-.text-input {
-  overflow-y: auto;
-  resize: vertical;
-}
-
-.text-input::-webkit-scrollbar {
-  width: 8px;
-}
-
-.text-input::-webkit-scrollbar-track {
-  background: var(--color-secondary);
-  border-radius: var(--radius-sm);
-  margin: var(--space-xs);
-}
-
-.text-input::-webkit-scrollbar-thumb {
-  background: var(--color-text-muted);
-  border-radius: var(--radius-sm);
-  transition: background var(--duration-normal) var(--easing-ease);
-}
-
-.text-input::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
-}
-
-.text-input::-webkit-scrollbar-thumb:active {
-  background: var(--color-primary);
-}
-
 /* Input Focus States */
 .chat-input:focus,
 .text-input:focus,
@@ -2656,7 +2626,7 @@ select option:checked {
 .output-area {
   flex: 1;
   padding: var(--space-2xl);
-  background: transparent;
+  background: var(--color-surface);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
   overflow-y: auto;
@@ -2680,7 +2650,10 @@ select option:checked {
   left: 0;
   right: 0;
   bottom: 0;
-  background: transparent;
+  background: linear-gradient(135deg,
+      rgba(99, 102, 241, 0.01) 0%,
+      transparent 50%,
+      rgba(99, 102, 241, 0.01) 100%);
   border-radius: var(--radius-lg);
   pointer-events: none;
 }
@@ -2763,7 +2736,7 @@ select option:checked {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-
+      
 /* Better spacing for consecutive elements */
 .output-container>*+*,
 .summary-output>*+*,
@@ -8489,9 +8462,9 @@ hanced Mind Map Styles */
   .output-area .thinking-indicator {
     justify-content: center;
     padding: var(--space-2xl);
-    background: transparent;
+    background: var(--color-secondary);
     border-radius: var(--radius-md);
-    border: none;
+    border: 1px solid var(--color-border-light);
   }
 
   /* Dark theme support for thinking indicator */
@@ -8532,66 +8505,6 @@ hanced Mind Map Styles */
 
 
 
-/* ========================================
-   ROADMAP-STYLE SLIDES IN CHAT OUTPUT (FINAL FIX)
-   ======================================== */
-
-/* 1. Remove all outer message bubble styling */
-.message.assistant .message-content {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* 2. Reset slide container to match roadmap-step exactly */
-.message.assistant .slide,
-.message.assistant .slide-container {
-  /* Match .roadmap-step */
-  border-left: 3px solid #2563eb !important;
-  background: white !important;
-  margin: 0 !important;
-  margin-bottom: 16px !important;
-  padding: 16px !important;
-  border-radius: 4px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  position: relative !important;
-  font-size: 14px !important;
-  line-height: 1.5 !important;
-  color: #0f172a !important;
-}
-
-/* 3. Remove all decorative pseudo-elements (dots, gradient bars, etc.) */
-.message.assistant .slide::before,
-.message.assistant .slide::after,
-.message.assistant .slide-container::before,
-.message.assistant .slide-container::after {
-  display: none !important;
-}
-
-/* 4. Ensure full-width within chat container */
-.chat-messages {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-.tab-content.active {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-/* 5. Optional: if you use .output-area directly for slides */
-.output-area .slide,
-.output-area .slide-container {
-  border-left: 3px solid #2563eb !important;
-  background: white !important;
-  margin-bottom: 16px !important;
-  padding: 16px !important;
-  border-radius: 4px !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-}
 
 /* ========================================
    REMOVE OUTER CONTAINER FOR SLIDES IN CHAT
@@ -8683,11 +8596,21 @@ hanced Mind Map Styles */
   display: none !important;
 }
 
+
+
+
+
+
+
+
+
+
+
 /* ========================================
-   ROADMAP-STYLE SLIDE SEPARATION (BLUE LINE)
+   ROADMAP-STYLE SLIDES IN CHAT OUTPUT (FINAL FIX)
    ======================================== */
 
-/* 1. Remove outer message bubble */
+/* 1. Remove all outer message bubble styling */
 .message.assistant .message-content {
   background: transparent !important;
   border: none !important;
@@ -8696,12 +8619,11 @@ hanced Mind Map Styles */
   margin: 0 !important;
 }
 
-/* 2. Apply roadmap-step style to slides */
+/* 2. Reset slide container to match roadmap-step exactly */
 .message.assistant .slide,
 .message.assistant .slide-container {
-  /* Match .roadmap-step exactly */
+  /* Match .roadmap-step */
   border-left: 3px solid #2563eb !important;
-  border-radius: var(--radius-md);
   background: white !important;
   margin: 0 !important;
   margin-bottom: 16px !important;
@@ -8716,12 +8638,33 @@ hanced Mind Map Styles */
   color: #0f172a !important;
 }
 
-/* 3. Remove all decorative pseudo-elements (dots, gradient bars) */
+/* 3. Remove all decorative pseudo-elements (dots, gradient bars, etc.) */
 .message.assistant .slide::before,
 .message.assistant .slide::after,
 .message.assistant .slide-container::before,
 .message.assistant .slide-container::after {
   display: none !important;
+}
+
+/* 4. Ensure full-width within chat container */
+.chat-messages {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.tab-content.active {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 5. Optional: if you use .output-area directly for slides */
+.output-area .slide,
+.output-area .slide-container {
+  border-left: 3px solid #2563eb !important;
+  background: white !important;
+  margin-bottom: 16px !important;
+  padding: 16px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 
